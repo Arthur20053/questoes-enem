@@ -1,4 +1,0 @@
-{
-  "observacao": "Este arquivo fica vazio de propósito. O site busca questões reais pela API pública enem.dev. Se quiser criar um banco próprio depois, siga o modelo de questions.template.json.",
-  "questions": []
-}
