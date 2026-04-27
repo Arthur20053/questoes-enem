@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Banco de Questões ENEM</title>
+  <meta name="description" content="Banco de questões reais do ENEM com listas personalizadas, correção automática e explicação por IA." />
+  <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">E</div>
+      <div>
+        <h1>Banco de Questões ENEM</h1>
+        <p>Questões reais do ENEM + correção + explicação por IA</p>
+      </div>
+    </div>
+    <a class="ghost-link" href="#configuracao">Configurar IA</a>
+  </header>
+
+  <main class="page">
+    <section class="hero card">
+      <div>
+        <span class="badge">GitHub Pages + Render + Gemini</span>
+        <h2>Gere uma lista personalizada de até 50 questões</h2>
+        <p>
+          Escolha a área, o assunto e a dificuldade. O site busca questões reais já aplicadas no ENEM,
+          monta uma lista de treino e permite responder, pular e pedir explicação.
+        </p>
+      </div>
+      <div class="hero-note">
+        <strong>Atenção</strong>
+        <span>
+          Assunto e dificuldade são estimados por palavras-chave, porque a API pública traz a questão,
+          área e gabarito, mas nem sempre traz esses rótulos prontos.
+        </span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <aside class="card controls">
+        <h2>Gerar lista</h2>
+
+        <label>
+          Matéria / área
+          <select id="discipline">
+            <option value="todas">Todas</option>
+            <option value="linguagens">Linguagens</option>
+            <option value="ciencias-humanas">Ciências Humanas</option>
+            <option value="ciencias-natureza">Ciências da Natureza</option>
+            <option value="matematica">Matemática</option>
+          </select>
+        </label>
+
+        <label>
+          Assunto
+          <select id="topic">
+            <option value="todos">Todos os assuntos</option>
+          </select>
+        </label>
+
+        <label>
+          Dificuldade
+          <select id="difficulty">
+            <option value="todas">Todas</option>
+            <option value="facil">Fácil</option>
+            <option value="media">Média</option>
+            <option value="dificil">Difícil</option>
+          </select>
+        </label>
+
+        <label>
+          Quantidade
+          <input id="amount" type="number" min="1" max="50" value="50" />
+        </label>
+
+        <details class="advanced">
+          <summary>Anos usados</summary>
+          <div class="years">
+            <label><input type="checkbox" name="year" value="2023" checked> 2023</label>
+            <label><input type="checkbox" name="year" value="2022" checked> 2022</label>
+            <label><input type="checkbox" name="year" value="2021" checked> 2021</label>
+            <label><input type="checkbox" name="year" value="2020" checked> 2020</label>
+            <label><input type="checkbox" name="year" value="2019" checked> 2019</label>
+            <label><input type="checkbox" name="year" value="2018" checked> 2018</label>
+            <label><input type="checkbox" name="year" value="2017" checked> 2017</label>
+            <label><input type="checkbox" name="year" value="2016" checked> 2016</label>
+            <label><input type="checkbox" name="year" value="2015" checked> 2015</label>
+            <label><input type="checkbox" name="year" value="2014" checked> 2014</label>
+            <label><input type="checkbox" name="year" value="2013" checked> 2013</label>
+            <label><input type="checkbox" name="year" value="2012" checked> 2012</label>
+            <label><input type="checkbox" name="year" value="2011" checked> 2011</label>
+            <label><input type="checkbox" name="year" value="2010" checked> 2010</label>
+            <label><input type="checkbox" name="year" value="2009" checked> 2009</label>
+          </div>
+        </details>
+
+        <button id="generateBtn" class="primary">Gerar questões</button>
+
+        <div class="status-box">
+          <div><strong>Respondidas:</strong> <span id="answeredCount">0</span></div>
+          <div><strong>Acertos:</strong> <span id="correctCount">0</span></div>
+          <div><strong>Erros:</strong> <span id="wrongCount">0</span></div>
+          <div><strong>Puladas:</strong> <span id="skippedCount">0</span></div>
+        </div>
+
+        <p class="small">
+          Fonte das questões: API pública enem.dev, usando dados públicos do ENEM. Para conferência oficial,
+          consulte também o Inep.
+        </p>
+      </aside>
+
+      <section class="card practice">
+        <div id="emptyState" class="empty">
+          <h2>Comece gerando sua lista</h2>
+          <p>Escolha os filtros ao lado e clique em <strong>Gerar questões</strong>.</p>
+        </div>
+
+        <div id="loadingState" class="empty hidden">
+          <div class="spinner"></div>
+          <h2>Buscando questões reais do ENEM...</h2>
+          <p>Isso pode levar alguns segundos porque o site consulta vários anos da prova.</p>
+        </div>
+
+        <article id="questionView" class="hidden">
+          <div class="question-head">
+            <div>
+              <span id="progress" class="badge">Questão 1/50</span>
+              <h2 id="questionTitle">Questão</h2>
+              <p id="questionMeta" class="muted"></p>
+            </div>
+            <button id="skipBtn" class="secondary">Pular questão</button>
+          </div>
+
+          <div id="questionFiles" class="question-files"></div>
+
+          <div id="questionContext" class="question-context"></div>
+
+          <p id="alternativesIntro" class="alternatives-intro"></p>
+
+          <div id="alternatives" class="alternatives"></div>
+
+          <div class="actions">
+            <button id="answerBtn" class="primary">Responder</button>
+            <button id="explainBtn" class="secondary" disabled>Explicar resposta</button>
+            <button id="nextBtn" class="secondary hidden">Próxima questão</button>
+          </div>
+
+          <div id="feedback" class="feedback hidden"></div>
+
+          <div id="explanationBox" class="explanation hidden">
+            <div class="spinner small-spinner"></div>
+            <p>Gerando explicação...</p>
+          </div>
+        </article>
+      </section>
+    </section>
+
+    <section id="configuracao" class="card config">
+      <h2>Configuração da IA</h2>
+      <p>
+        Depois que você publicar o backend no Render, copie o link gerado e cole em
+        <code>github-pages-site/assets/config.js</code> no campo <code>BACKEND_URL</code>.
+      </p>
+      <pre><code>window.APP_CONFIG = {
+  BACKEND_URL: "https://seu-backend.onrender.com"
+};</code></pre>
+      <p class="small">
+        Não coloque sua chave do Gemini no site. Ela deve ficar apenas no Render, como variável de ambiente GEMINI_API_KEY.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>
+      Projeto de estudos. As questões são carregadas por API pública da comunidade e devem ser conferidas com as provas oficiais do Inep quando necessário.
+    </p>
+  </footer>
+
+  <script src="./assets/config.js"></script>
+  <script src="./assets/app.js"></script>
+</body>
+</html>

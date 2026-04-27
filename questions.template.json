@@ -1,0 +1,46 @@
+{
+  "questions": [
+    {
+      "title": "Questão 1 - ENEM 2023",
+      "index": 1,
+      "discipline": "matematica",
+      "year": 2023,
+      "context": "Cole aqui o enunciado real extraído da prova oficial.",
+      "files": [],
+      "correctAlternative": "A",
+      "alternativesIntroduction": "Assinale a alternativa correta.",
+      "alternatives": [
+        {
+          "letter": "A",
+          "text": "Alternativa A",
+          "file": "",
+          "isCorrect": true
+        },
+        {
+          "letter": "B",
+          "text": "Alternativa B",
+          "file": "",
+          "isCorrect": false
+        },
+        {
+          "letter": "C",
+          "text": "Alternativa C",
+          "file": "",
+          "isCorrect": false
+        },
+        {
+          "letter": "D",
+          "text": "Alternativa D",
+          "file": "",
+          "isCorrect": false
+        },
+        {
+          "letter": "E",
+          "text": "Alternativa E",
+          "file": "",
+          "isCorrect": false
+        }
+      ]
+    }
+  ]
+}
