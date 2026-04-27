@@ -8,6 +8,6 @@
   A chave fica no Render como variável de ambiente.
 */
 window.APP_CONFIG = {
-  BACKEND_URL: "COLE_AQUI_O_LINK_DO_RENDER",
+  BACKEND_URL: "https://back-enem.onrender.com",
   ENEM_API_BASE: "https://api.enem.dev/v1"
 };
