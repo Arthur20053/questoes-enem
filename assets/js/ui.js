@@ -108,7 +108,7 @@ function footerHtml(){
         <strong>Questões ENEM</strong>
         <p class="small">Site estático para GitHub Pages + backend no Render + Gemini.</p>
       </div>
-      <div class="small">Fonte das questões: API pública enem.dev. Conferência oficial: provas e gabaritos do Inep.</div>
+      <div class="small">Fonte das questões: banco local curado em data/banco-questoes.json. Conferência oficial: provas e gabaritos do Inep.</div>
     </div>
   </footer>`;
 }

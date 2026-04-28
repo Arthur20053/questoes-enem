@@ -1,20 +1,10 @@
-# Questões ENEM — GitHub Pages
+# Questões ENEM - GitHub Pages
 
-Site estático multipáginas para banco de questões do ENEM.
-
-## Páginas
-
-- `index.html`: início
-- `materias.html`: matérias e assuntos
-- `gerar.html`: filtros para gerar lista
-- `questoes.html`: tela para responder, corrigir, pular e pedir explicação
-- `sobre.html`: informações do projeto
+Site multipáginas para treino de questões do ENEM.
 
 ## Como publicar
 
-Suba todo o conteúdo desta pasta na raiz do repositório do GitHub Pages.
-
-A raiz deve ficar assim:
+Suba o conteúdo desta pasta no repositório do GitHub Pages:
 
 ```txt
 index.html
@@ -24,25 +14,31 @@ questoes.html
 sobre.html
 404.html
 assets/
+data/
 .nojekyll
 README.md
 ```
 
-Depois ative em:
+## Banco de questões
+
+As questões ficam em:
 
 ```txt
-Settings > Pages > Deploy from a branch > main > /root
+data/banco-questoes.json
 ```
 
-## Backend
+O site lê somente esse banco local. Isso evita que a lista puxe questão de matéria errada.
 
-O link do backend do Render pode ser configurado de duas formas:
+## IA
 
-1. Pela interface do site, clicando em **Configurar IA**.
-2. Editando `assets/js/config.js` e colocando o link em `BACKEND_URL`.
+O botão de explicação chama o backend Render configurado em:
 
-Não coloque chave do Gemini no GitHub Pages.
+```txt
+assets/js/config.js
+```
 
-## Banco próprio
+Valor atual:
 
-Abra `admin/gerar-banco.html` para gerar `data/banco-questoes.json`. Depois de salvar o arquivo gerado em `data/banco-questoes.json`, o site passa a usar filtros exatos por matéria, assunto e dificuldade.
+```txt
+https://back-enem.onrender.com
+```

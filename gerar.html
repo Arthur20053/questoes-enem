@@ -13,7 +13,7 @@
       <div class="container">
         <div class="breadcrumb"><a href="./index.html">Início</a><span>›</span><span>Gerar lista</span></div>
         <h1 class="page-title">Gere sua lista personalizada</h1>
-        <p class="lead">Escolha matéria, assunto, dificuldade e quantidade. O site busca questões reais já aplicadas no ENEM e monta uma lista para treino.</p>
+        <p class="lead">Escolha matéria, assunto, dificuldade e quantidade. O site usa um banco local curado para não misturar matérias erradas.</p>
       </div>
     </section>
 
@@ -52,13 +52,13 @@
 
             <div class="form-footer">
               <div>
-                <p class="muted small">Os filtros agora usam busca mais rígida: é melhor vir menos questões do que misturar matéria errada.</p>
+                <p class="muted small">Agora os filtros são exatos: o site só usa questões cadastradas no banco local com essa matéria, assunto e dificuldade.</p>
               </div>
               <button class="btn" type="submit">Gerar questões</button>
             </div>
           </form>
 
-          <div id="loading" class="loading"><span class="spinner"></span><span id="loadingText">Buscando questões...</span></div>
+          <div id="loading" class="loading"><span class="spinner"></span><span id="loadingText">Carregando banco local...</span></div>
           <div style="margin-top:16px" class="progress-wrap"><div id="progressBar" class="progress-bar"></div></div>
           <div id="resultBox" style="margin-top:18px"></div>
         </div>
@@ -69,12 +69,12 @@
       <div class="container">
         <div class="cards two">
           <div class="card">
-            <h2>Como a classificação funciona?</h2>
-            <p class="muted">A questão vem de prova real do ENEM. A API informa a área do conhecimento, e o site usa palavras-chave mais rígidas para separar Física, Química, Biologia, História, Geografia, Filosofia e Sociologia. Se o filtro for muito específico, pode aparecer menos de 50 questões.</p>
+            <h2>Como o banco funciona?</h2>
+            <p class="muted">As questões ficam cadastradas em data/banco-questoes.json com matéria, assunto e dificuldade. O site não tenta adivinhar a matéria na hora, então evita puxar Biologia quando você pediu Física.</p>
           </div>
           <div class="card">
             <h2>Por que às vezes vem menos de 50?</h2>
-            <p class="muted">Alguns filtros muito específicos podem encontrar poucas questões, principalmente porque o ENEM agrupa Física, Química e Biologia dentro de Ciências da Natureza. Nesse caso, escolha “Todos os assuntos” ou deixe dificuldade como “Todas”.</p>
+            <p class="muted">Alguns filtros ainda podem ter poucas questões porque o banco local está em expansão. Nesse caso, escolha “Todos os assuntos”, aumente os anos ou deixe dificuldade como “Todas”.</p>
           </div>
         </div>
       </div>
@@ -144,7 +144,7 @@
         progressBar.style.width = '0%';
         try{
           const questions = await ENEM_API.generateQuestionList(filters, ({year, current, total, found}) => {
-            loadingText.textContent = `Buscando ${year}... encontrados até agora: ${found}`;
+            loadingText.textContent = `Carregando banco local... encontrados: ${found}`;
             progressBar.style.width = `${Math.round((current / total) * 100)}%`;
           });
 
@@ -158,13 +158,13 @@
           localStorage.setItem('ENEM_CURRENT_LIST', JSON.stringify(payload));
 
           if(!questions.length){
-            resultBox.innerHTML = `<p class="alert danger">Não encontrei questões seguras com esse filtro. Para não misturar matéria errada, tente “Todos os assuntos” ou dificuldade “Todas”.</p>`;
+            resultBox.innerHTML = `<p class="alert danger">Não encontrei questões com esse filtro no banco local. Tente “Todos os assuntos”, dificuldade “Todas” ou adicione mais questões ao banco.</p>`;
           } else {
             resultBox.innerHTML = `<div class="alert success"><strong>Lista gerada!</strong> Encontrei ${questions.length} questão(ões). Agora você já pode responder.</div><div class="actions" style="margin-top:14px"><a class="btn" href="./questoes.html">Responder agora</a><button class="btn secondary" type="button" onclick="location.reload()">Gerar outra</button></div>`;
           }
         } catch(err){
           console.error(err);
-          resultBox.innerHTML = `<p class="alert danger">Erro ao gerar lista. Verifique a internet ou tente novamente.</p>`;
+          resultBox.innerHTML = `<p class="alert danger">Erro ao carregar o banco local. Confira se data/banco-questoes.json foi enviado para o GitHub.</p>`;
         } finally {
           loading.classList.remove('show');
         }
