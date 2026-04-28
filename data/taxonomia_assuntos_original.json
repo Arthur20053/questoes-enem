@@ -1,0 +1,121 @@
+{
+  "materias": [
+    "Artes",
+    "Biologia",
+    "Filosofia",
+    "Física",
+    "Geografia",
+    "História",
+    "Literatura",
+    "Língua Estrangeira",
+    "Matemática",
+    "Português",
+    "Química",
+    "Sociologia"
+  ],
+  "assuntos_por_materia": {
+    "Artes": [
+      "Artes visuais",
+      "Cultura e patrimônio",
+      "Linguagens artísticas",
+      "Música",
+      "Teatro, dança e performance"
+    ],
+    "Biologia": [
+      "Botânica",
+      "Citologia e organelas",
+      "Ecologia e meio ambiente",
+      "Evolução",
+      "Fisiologia humana",
+      "Genética e biotecnologia",
+      "Imunologia e saúde",
+      "Zoologia"
+    ],
+    "Filosofia": [
+      "Conhecimento e verdade",
+      "Estética",
+      "Filosofia clássica/moderna",
+      "Política e cidadania",
+      "Ética e moral"
+    ],
+    "Física": [
+      "Cinemática",
+      "Dinâmica e forças",
+      "Eletricidade e circuitos",
+      "Eletromagnetismo",
+      "Energia, trabalho e potência",
+      "Hidrostática e fluidos",
+      "Mecânica geral",
+      "Ondulatória e acústica",
+      "Termologia e calorimetria",
+      "Óptica"
+    ],
+    "Geografia": [
+      "Cartografia e escalas",
+      "Geografia agrária",
+      "Geopolítica e globalização",
+      "Meio ambiente e sustentabilidade",
+      "População e migrações",
+      "Urbanização e espaço urbano"
+    ],
+    "História": [
+      "Brasil Colônia e escravidão",
+      "Brasil Império e República",
+      "Cidadania, memória e patrimônio",
+      "História geral"
+    ],
+    "Literatura": [
+      "Escolas literárias e autores",
+      "Intertextualidade",
+      "Poesia e linguagem literária",
+      "Prosa e narrativa"
+    ],
+    "Língua Estrangeira": [
+      "Inglês/Espanhol - interpretação"
+    ],
+    "Matemática": [
+      "Análise combinatória",
+      "Equações e sistemas",
+      "Estatística",
+      "Funções e gráficos",
+      "Geometria espacial",
+      "Geometria plana",
+      "Leitura de gráficos/tabelas e raciocínio",
+      "Porcentagem e matemática financeira",
+      "Probabilidade",
+      "Progressões e sequências",
+      "Razão, proporção e regra de três"
+    ],
+    "Português": [
+      "Argumentação e discurso",
+      "Coesão, coerência e semântica",
+      "Funções da linguagem",
+      "Gêneros textuais",
+      "Interpretação de texto",
+      "Variação linguística"
+    ],
+    "Química": [
+      "Eletroquímica",
+      "Equilíbrio, cinética e pH",
+      "Estequiometria e cálculos químicos",
+      "Química ambiental",
+      "Química geral",
+      "Química orgânica",
+      "Soluções e concentração",
+      "Tabela periódica e ligações",
+      "Termoquímica"
+    ],
+    "Sociologia": [
+      "Cultura e identidade",
+      "Desigualdade e exclusão",
+      "Movimentos sociais e cidadania",
+      "Mídia, consumo e indústria cultural",
+      "Trabalho e sociedade"
+    ]
+  },
+  "observacoes": [
+    "As questões de inglês/espanhol foram mantidas em matéria separada \"Língua Estrangeira\" porque aparecem em duplicidade no caderno do ENEM.",
+    "Classificação de matéria/assunto/dificuldade realizada por regras semânticas e palavras-chave, com campos editáveis no banco.",
+    "O arquivo chamado enem 2022.pdf foi detectado como conteúdo/gabarito de 2023 e parece duplicado de enem 2023.pdf."
+  ]
+}

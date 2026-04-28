@@ -1,142 +1,451 @@
 window.ENEM_TOPICS = {
-  fisica: {
-    name: "Física",
-    emoji: "⚡",
-    area: "natural-sciences",
-    description: "Energia, movimento, eletricidade, ondas, calor e situações do cotidiano.",
-    topics: [
-      { id: "mecanica", name: "Mecânica", keywords: ["força", "velocidade", "aceleração", "movimento", "atrito", "newton", "trajetória", "queda", "peso", "massa"] },
-      { id: "energia-trabalho", name: "Energia, trabalho e potência", keywords: ["energia", "trabalho", "potência", "rendimento", "joule", "watt", "cinética", "potencial"] },
-      { id: "eletricidade", name: "Eletricidade", keywords: ["corrente", "tensão", "voltagem", "resistor", "resistência", "circuito", "ohm", "potência elétrica", "bateria", "tomada"] },
-      { id: "calorimetria", name: "Calorimetria e termologia", keywords: ["calor", "temperatura", "calor específico", "capacidade térmica", "dilatação", "condução", "convecção", "radiação"] },
-      { id: "ondas", name: "Ondas e acústica", keywords: ["onda", "frequência", "comprimento de onda", "som", "eco", "ressonância", "decibel", "ultrassom"] },
-      { id: "optica", name: "Óptica", keywords: ["luz", "espelho", "lente", "refração", "reflexão", "imagem", "foco", "óptica"] },
-      { id: "hidrostatica", name: "Hidrostática", keywords: ["pressão", "empuxo", "densidade", "fluido", "líquido", "pascal", "arquimedes"] }
+  "fisica": {
+    "name": "Física",
+    "emoji": "⚡",
+    "area": "natural-sciences",
+    "description": "Movimento, forças, energia, eletricidade, ondas, calor, óptica e fluidos.",
+    "topics": [
+      {
+        "id": "cinematica",
+        "name": "Cinemática",
+        "keywords": []
+      },
+      {
+        "id": "dinamica",
+        "name": "Dinâmica e forças",
+        "keywords": []
+      },
+      {
+        "id": "eletricidade",
+        "name": "Eletricidade e circuitos",
+        "keywords": []
+      },
+      {
+        "id": "eletromagnetismo",
+        "name": "Eletromagnetismo",
+        "keywords": []
+      },
+      {
+        "id": "energia-trabalho",
+        "name": "Energia, trabalho e potência",
+        "keywords": []
+      },
+      {
+        "id": "hidrostatica",
+        "name": "Hidrostática e fluidos",
+        "keywords": []
+      },
+      {
+        "id": "mecanica",
+        "name": "Mecânica geral",
+        "keywords": []
+      },
+      {
+        "id": "ondas",
+        "name": "Ondulatória e acústica",
+        "keywords": []
+      },
+      {
+        "id": "calorimetria",
+        "name": "Termologia e calorimetria",
+        "keywords": []
+      },
+      {
+        "id": "optica",
+        "name": "Óptica",
+        "keywords": []
+      }
     ]
   },
-  quimica: {
-    name: "Química",
-    emoji: "🧪",
-    area: "natural-sciences",
-    description: "Transformações da matéria, soluções, reações, estequiometria e química ambiental.",
-    topics: [
-      { id: "solucoes", name: "Soluções e concentração", keywords: ["solução", "concentração", "molar", "mol/L", "diluição", "soluto", "solvente", "ppm"] },
-      { id: "estequiometria", name: "Estequiometria", keywords: ["mol", "massa molar", "reagente", "produto", "equação química", "proporção", "rendimento"] },
-      { id: "termoquimica", name: "Termoquímica", keywords: ["entalpia", "exotérmica", "endotérmica", "combustão", "calor de reação", "energia liberada"] },
-      { id: "eletroquimica", name: "Eletroquímica", keywords: ["pilha", "eletrólise", "oxidação", "redução", "ânodo", "cátodo", "corrosão"] },
-      { id: "organica", name: "Química orgânica", keywords: ["carbono", "hidrocarboneto", "álcool", "ácido carboxílico", "éster", "função orgânica", "polímero"] },
-      { id: "equilibrio", name: "Equilíbrio químico e pH", keywords: ["equilíbrio", "ph", "ácido", "base", "neutralização", "tampão", "ka", "kb"] },
-      { id: "ambiental", name: "Química ambiental", keywords: ["poluição", "tratamento de água", "chuva ácida", "efeito estufa", "ozônio", "resíduo", "reciclagem"] }
+  "quimica": {
+    "name": "Química",
+    "emoji": "🧪",
+    "area": "natural-sciences",
+    "description": "Transformações da matéria, soluções, reações, orgânica, cálculos e química ambiental.",
+    "topics": [
+      {
+        "id": "eletroquimica",
+        "name": "Eletroquímica",
+        "keywords": []
+      },
+      {
+        "id": "equilibrio",
+        "name": "Equilíbrio, cinética e pH",
+        "keywords": []
+      },
+      {
+        "id": "estequiometria",
+        "name": "Estequiometria e cálculos químicos",
+        "keywords": []
+      },
+      {
+        "id": "ambiental",
+        "name": "Química ambiental",
+        "keywords": []
+      },
+      {
+        "id": "quimica-geral",
+        "name": "Química geral",
+        "keywords": []
+      },
+      {
+        "id": "organica",
+        "name": "Química orgânica",
+        "keywords": []
+      },
+      {
+        "id": "solucoes",
+        "name": "Soluções e concentração",
+        "keywords": []
+      },
+      {
+        "id": "tabela-ligacoes",
+        "name": "Tabela periódica e ligações",
+        "keywords": []
+      },
+      {
+        "id": "termoquimica",
+        "name": "Termoquímica",
+        "keywords": []
+      }
     ]
   },
-  biologia: {
-    name: "Biologia",
-    emoji: "🧬",
-    area: "natural-sciences",
-    description: "Ecologia, saúde, genética, evolução, fisiologia e biotecnologia.",
-    topics: [
-      { id: "ecologia", name: "Ecologia", keywords: ["ecossistema", "cadeia alimentar", "teia alimentar", "bioma", "população", "comunidade", "biodiversidade", "sucessão"] },
-      { id: "genetica", name: "Genética", keywords: ["gene", "dna", "rna", "alelo", "hereditariedade", "cromossomo", "mutação", "genótipo", "fenótipo"] },
-      { id: "evolucao", name: "Evolução", keywords: ["seleção natural", "adaptação", "evolução", "ancestral", "espécie", "darwin", "variabilidade"] },
-      { id: "fisiologia", name: "Fisiologia humana", keywords: ["sistema digestório", "respiração", "circulação", "hormônio", "rim", "neurônio", "sangue", "imunidade"] },
-      { id: "citologia", name: "Citologia", keywords: ["célula", "mitocôndria", "membrana", "organelas", "núcleo", "fotossíntese", "respiração celular"] },
-      { id: "saude", name: "Saúde e doenças", keywords: ["vacina", "vírus", "bactéria", "parasita", "epidemia", "doença", "saneamento", "prevenção"] },
-      { id: "biotecnologia", name: "Biotecnologia", keywords: ["transgênico", "clonagem", "enzima", "biotecnologia", "pcr", "engenharia genética", "dna recombinante"] }
+  "biologia": {
+    "name": "Biologia",
+    "emoji": "🧬",
+    "area": "natural-sciences",
+    "description": "Ecologia, saúde, genética, evolução, fisiologia, citologia, botânica e zoologia.",
+    "topics": [
+      {
+        "id": "botanica",
+        "name": "Botânica",
+        "keywords": []
+      },
+      {
+        "id": "citologia",
+        "name": "Citologia e organelas",
+        "keywords": []
+      },
+      {
+        "id": "ecologia",
+        "name": "Ecologia e meio ambiente",
+        "keywords": []
+      },
+      {
+        "id": "evolucao",
+        "name": "Evolução",
+        "keywords": []
+      },
+      {
+        "id": "fisiologia",
+        "name": "Fisiologia humana",
+        "keywords": []
+      },
+      {
+        "id": "genetica",
+        "name": "Genética e biotecnologia",
+        "keywords": []
+      },
+      {
+        "id": "saude",
+        "name": "Imunologia e saúde",
+        "keywords": []
+      },
+      {
+        "id": "zoologia",
+        "name": "Zoologia",
+        "keywords": []
+      }
     ]
   },
-  matematica: {
-    name: "Matemática",
-    emoji: "📐",
-    area: "mathematics",
-    description: "Porcentagem, funções, geometria, estatística, probabilidade e interpretação de gráficos.",
-    topics: [
-      { id: "porcentagem", name: "Porcentagem e razão", keywords: ["porcentagem", "%", "percentual", "aumento", "desconto", "taxa", "razão", "proporção"] },
-      { id: "funcoes", name: "Funções", keywords: ["função", "gráfico", "linear", "quadrática", "afim", "exponencial", "crescimento", "decrescimento"] },
-      { id: "geometria-plana", name: "Geometria plana", keywords: ["área", "perímetro", "triângulo", "círculo", "quadrado", "retângulo", "polígono", "ângulo"] },
-      { id: "geometria-espacial", name: "Geometria espacial", keywords: ["volume", "cilindro", "cone", "esfera", "prisma", "pirâmide", "capacidade"] },
-      { id: "estatistica", name: "Estatística", keywords: ["média", "mediana", "moda", "desvio", "frequência", "tabela", "gráfico", "amostra"] },
-      { id: "probabilidade", name: "Probabilidade", keywords: ["probabilidade", "chance", "evento", "sorteio", "combinação", "arranjo", "permutação"] },
-      { id: "financeira", name: "Matemática financeira", keywords: ["juros", "montante", "capital", "parcela", "financiamento", "lucro", "prejuízo"] },
-      { id: "escala", name: "Escala e unidades", keywords: ["escala", "mapa", "conversão", "unidade", "metro", "litro", "quilômetro", "medida"] }
+  "matematica": {
+    "name": "Matemática",
+    "emoji": "📐",
+    "area": "mathematics",
+    "description": "Funções, geometria, estatística, probabilidade, porcentagem, proporção e gráficos.",
+    "topics": [
+      {
+        "id": "combinatoria",
+        "name": "Análise combinatória",
+        "keywords": []
+      },
+      {
+        "id": "equacoes-sistemas",
+        "name": "Equações e sistemas",
+        "keywords": []
+      },
+      {
+        "id": "estatistica",
+        "name": "Estatística",
+        "keywords": []
+      },
+      {
+        "id": "funcoes",
+        "name": "Funções e gráficos",
+        "keywords": []
+      },
+      {
+        "id": "geometria-espacial",
+        "name": "Geometria espacial",
+        "keywords": []
+      },
+      {
+        "id": "geometria-plana",
+        "name": "Geometria plana",
+        "keywords": []
+      },
+      {
+        "id": "graficos-tabelas",
+        "name": "Leitura de gráficos/tabelas e raciocínio",
+        "keywords": []
+      },
+      {
+        "id": "financeira",
+        "name": "Porcentagem e matemática financeira",
+        "keywords": []
+      },
+      {
+        "id": "probabilidade",
+        "name": "Probabilidade",
+        "keywords": []
+      },
+      {
+        "id": "progressoes",
+        "name": "Progressões e sequências",
+        "keywords": []
+      },
+      {
+        "id": "razao-proporcao",
+        "name": "Razão, proporção e regra de três",
+        "keywords": []
+      }
     ]
   },
-  linguagem: {
-    name: "Linguagens",
-    emoji: "📚",
-    area: "languages",
-    description: "Interpretação textual, gêneros, literatura, linguagem verbal/não verbal e variação linguística.",
-    topics: [
-      { id: "interpretacao", name: "Interpretação de texto", keywords: ["texto", "autor", "leitor", "sentido", "interpretação", "inferir", "ideia central", "argumento"] },
-      { id: "generos", name: "Gêneros textuais", keywords: ["gênero", "crônica", "notícia", "artigo", "charge", "tirinha", "propaganda", "poema", "resenha"] },
-      { id: "literatura", name: "Literatura", keywords: ["literatura", "poema", "romance", "modernismo", "narrador", "personagem", "verso", "estrofe"] },
-      { id: "variacao", name: "Variação linguística", keywords: ["variação", "norma", "regional", "oralidade", "linguagem coloquial", "preconceito linguístico"] },
-      { id: "semantica", name: "Semântica e figuras", keywords: ["metáfora", "ironia", "ambiguidade", "sentido figurado", "conotação", "denotação"] },
-      { id: "artes-midias", name: "Artes, mídias e tecnologia", keywords: ["arte", "imagem", "mídia", "fotografia", "tecnologia", "internet", "publicidade", "design"] },
-      { id: "ingles-espanhol", name: "Inglês/Espanhol", keywords: ["english", "spanish", "inglês", "espanhol", "foreign", "language"] }
+  "linguagem": {
+    "name": "Linguagens",
+    "emoji": "📚",
+    "area": "languages",
+    "description": "Português, literatura, artes, língua estrangeira, interpretação e gêneros textuais.",
+    "topics": [
+      {
+        "id": "interpretacao",
+        "name": "Interpretação de texto",
+        "keywords": []
+      },
+      {
+        "id": "generos",
+        "name": "Gêneros textuais",
+        "keywords": []
+      },
+      {
+        "id": "variacao",
+        "name": "Variação linguística",
+        "keywords": []
+      },
+      {
+        "id": "semantica",
+        "name": "Coesão, coerência e semântica",
+        "keywords": []
+      },
+      {
+        "id": "funcoes-linguagem",
+        "name": "Funções da linguagem",
+        "keywords": []
+      },
+      {
+        "id": "argumentacao",
+        "name": "Argumentação e discurso",
+        "keywords": []
+      },
+      {
+        "id": "literatura-escolas",
+        "name": "Literatura: escolas literárias e autores",
+        "keywords": []
+      },
+      {
+        "id": "literatura-intertextualidade",
+        "name": "Literatura: intertextualidade",
+        "keywords": []
+      },
+      {
+        "id": "literatura-poesia",
+        "name": "Literatura: poesia e linguagem literária",
+        "keywords": []
+      },
+      {
+        "id": "literatura-prosa",
+        "name": "Literatura: prosa e narrativa",
+        "keywords": []
+      },
+      {
+        "id": "artes-visuais",
+        "name": "Artes visuais",
+        "keywords": []
+      },
+      {
+        "id": "artes-patrimonio",
+        "name": "Artes: cultura e patrimônio",
+        "keywords": []
+      },
+      {
+        "id": "linguagens-artisticas",
+        "name": "Linguagens artísticas",
+        "keywords": []
+      },
+      {
+        "id": "musica",
+        "name": "Música",
+        "keywords": []
+      },
+      {
+        "id": "teatro-danca",
+        "name": "Teatro, dança e performance",
+        "keywords": []
+      },
+      {
+        "id": "ingles-espanhol",
+        "name": "Inglês/Espanhol - interpretação",
+        "keywords": []
+      }
     ]
   },
-  filosofia: {
-    name: "Filosofia",
-    emoji: "🏛️",
-    area: "human-sciences",
-    description: "Ética, política, conhecimento, cidadania, razão, modernidade e filosofia clássica.",
-    topics: [
-      { id: "etica", name: "Ética e moral", keywords: ["ética", "moral", "virtude", "valor", "dever", "justiça", "bem", "liberdade"] },
-      { id: "politica", name: "Filosofia política", keywords: ["estado", "contrato social", "poder", "democracia", "cidadania", "hobbes", "locke", "rousseau"] },
-      { id: "conhecimento", name: "Teoria do conhecimento", keywords: ["conhecimento", "razão", "empirismo", "racionalismo", "verdade", "ciência", "método"] },
-      { id: "antiga", name: "Filosofia antiga", keywords: ["sócrates", "platão", "aristóteles", "polis", "sofistas", "mito", "logos"] },
-      { id: "moderna", name: "Filosofia moderna e contemporânea", keywords: ["kant", "descartes", "marx", "nietzsche", "foucault", "iluminismo", "modernidade"] }
+  "filosofia": {
+    "name": "Filosofia",
+    "emoji": "🏛️",
+    "area": "human-sciences",
+    "description": "Ética, política, conhecimento, estética, cidadania e filosofia clássica/moderna.",
+    "topics": [
+      {
+        "id": "conhecimento",
+        "name": "Conhecimento e verdade",
+        "keywords": []
+      },
+      {
+        "id": "estetica",
+        "name": "Estética",
+        "keywords": []
+      },
+      {
+        "id": "classica-moderna",
+        "name": "Filosofia clássica/moderna",
+        "keywords": []
+      },
+      {
+        "id": "politica",
+        "name": "Política e cidadania",
+        "keywords": []
+      },
+      {
+        "id": "etica",
+        "name": "Ética e moral",
+        "keywords": []
+      }
     ]
   },
-  sociologia: {
-    name: "Sociologia",
-    emoji: "👥",
-    area: "human-sciences",
-    description: "Cultura, trabalho, desigualdade, movimentos sociais, cidadania e instituições.",
-    topics: [
-      { id: "cultura", name: "Cultura e identidade", keywords: ["cultura", "identidade", "etnocentrismo", "diversidade", "patrimônio", "tradição", "costume"] },
-      { id: "trabalho", name: "Trabalho e sociedade", keywords: ["trabalho", "industrialização", "capitalismo", "fordismo", "toyotismo", "precarização", "classe"] },
-      { id: "desigualdade", name: "Desigualdade social", keywords: ["desigualdade", "pobreza", "exclusão", "mobilidade", "classe social", "renda"] },
-      { id: "movimentos", name: "Movimentos sociais", keywords: ["movimento social", "direitos", "protesto", "participação", "cidadania", "luta", "minoria"] },
-      { id: "instituicoes", name: "Estado, instituições e poder", keywords: ["estado", "instituição", "poder", "democracia", "política pública", "cidadania"] },
-      { id: "teoricos", name: "Clássicos da sociologia", keywords: ["durkheim", "weber", "marx", "fato social", "ação social", "mais-valia"] }
+  "sociologia": {
+    "name": "Sociologia",
+    "emoji": "👥",
+    "area": "human-sciences",
+    "description": "Cultura, desigualdade, movimentos sociais, mídia, consumo, trabalho e sociedade.",
+    "topics": [
+      {
+        "id": "cultura",
+        "name": "Cultura e identidade",
+        "keywords": []
+      },
+      {
+        "id": "desigualdade",
+        "name": "Desigualdade e exclusão",
+        "keywords": []
+      },
+      {
+        "id": "movimentos",
+        "name": "Movimentos sociais e cidadania",
+        "keywords": []
+      },
+      {
+        "id": "midia-consumo",
+        "name": "Mídia, consumo e indústria cultural",
+        "keywords": []
+      },
+      {
+        "id": "trabalho",
+        "name": "Trabalho e sociedade",
+        "keywords": []
+      }
     ]
   },
-  historia: {
-    name: "História",
-    emoji: "📜",
-    area: "human-sciences",
-    description: "Brasil, mundo contemporâneo, cidadania, conflitos, escravidão, república e patrimônio.",
-    topics: [
-      { id: "brasil-colonia", name: "Brasil Colônia", keywords: ["colônia", "colonização", "engenho", "açúcar", "escravidão", "sesmaria", "portugal"] },
-      { id: "brasil-imperio", name: "Brasil Império", keywords: ["império", "dom pedro", "abolição", "café", "monarquia", "constituição de 1824"] },
-      { id: "brasil-republica", name: "Brasil República", keywords: ["república", "vargas", "ditadura", "democracia", "constituição", "militar", "redemocratização"] },
-      { id: "escravidao", name: "Escravidão e relações étnico-raciais", keywords: ["escravidão", "quilombo", "negro", "africano", "abolição", "racismo", "cotas"] },
-      { id: "idade-moderna", name: "Idade Moderna", keywords: ["renascimento", "reforma", "absolutismo", "mercantilismo", "iluminismo", "revolução francesa"] },
-      { id: "mundo-contemporaneo", name: "Mundo contemporâneo", keywords: ["guerra mundial", "guerra fria", "nazismo", "fascismo", "globalização", "revolução russa"] },
-      { id: "patrimonio", name: "Memória e patrimônio", keywords: ["memória", "patrimônio", "identidade", "museu", "cultura material", "tradição"] }
+  "historia": {
+    "name": "História",
+    "emoji": "📜",
+    "area": "human-sciences",
+    "description": "Brasil Colônia, escravidão, República, patrimônio, cidadania e história geral.",
+    "topics": [
+      {
+        "id": "brasil-colonia",
+        "name": "Brasil Colônia e escravidão",
+        "keywords": []
+      },
+      {
+        "id": "brasil-republica",
+        "name": "Brasil Império e República",
+        "keywords": []
+      },
+      {
+        "id": "patrimonio",
+        "name": "Cidadania, memória e patrimônio",
+        "keywords": []
+      },
+      {
+        "id": "historia-geral",
+        "name": "História geral",
+        "keywords": []
+      }
     ]
   },
-  geografia: {
-    name: "Geografia",
-    emoji: "🌎",
-    area: "human-sciences",
-    description: "Cartografia, urbanização, agricultura, clima, globalização, população e meio ambiente.",
-    topics: [
-      { id: "cartografia", name: "Cartografia", keywords: ["mapa", "escala", "coordenadas", "latitude", "longitude", "projeção", "cartografia"] },
-      { id: "urbanizacao", name: "Urbanização", keywords: ["cidade", "urbano", "metrópole", "periferia", "mobilidade", "moradia", "segregação"] },
-      { id: "agropecuaria", name: "Agropecuária e campo", keywords: ["agricultura", "agronegócio", "campo", "rural", "latifúndio", "reforma agrária", "plantio"] },
-      { id: "clima", name: "Clima e vegetação", keywords: ["clima", "temperatura", "chuva", "bioma", "vegetação", "cerrado", "amazônia", "caatinga"] },
-      { id: "meio-ambiente", name: "Meio ambiente", keywords: ["desmatamento", "sustentabilidade", "impacto ambiental", "poluição", "recursos naturais", "conservação"] },
-      { id: "populacao", name: "População", keywords: ["população", "migração", "natalidade", "mortalidade", "demografia", "êxodo", "imigração"] },
-      { id: "globalizacao", name: "Globalização e economia", keywords: ["globalização", "comércio", "indústria", "transnacional", "bloco econômico", "território", "geopolítica"] }
+  "geografia": {
+    "name": "Geografia",
+    "emoji": "🌎",
+    "area": "human-sciences",
+    "description": "Cartografia, campo, urbanização, população, globalização, geopolítica e meio ambiente.",
+    "topics": [
+      {
+        "id": "cartografia",
+        "name": "Cartografia e escalas",
+        "keywords": []
+      },
+      {
+        "id": "agropecuaria",
+        "name": "Geografia agrária",
+        "keywords": []
+      },
+      {
+        "id": "globalizacao",
+        "name": "Geopolítica e globalização",
+        "keywords": []
+      },
+      {
+        "id": "meio-ambiente",
+        "name": "Meio ambiente e sustentabilidade",
+        "keywords": []
+      },
+      {
+        "id": "populacao",
+        "name": "População e migrações",
+        "keywords": []
+      },
+      {
+        "id": "urbanizacao",
+        "name": "Urbanização e espaço urbano",
+        "keywords": []
+      }
     ]
   }
 };
 
 window.ENEM_AREAS = {
   "natural-sciences": "Ciências da Natureza",
-  mathematics: "Matemática",
-  languages: "Linguagens",
+  "mathematics": "Matemática",
+  "languages": "Linguagens",
   "human-sciences": "Ciências Humanas"
 };

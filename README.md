@@ -1,44 +1,26 @@
-# Questões ENEM - GitHub Pages
+# Questões ENEM — GitHub Pages
 
-Site multipáginas para treino de questões do ENEM.
+Site estático multipáginas usando banco local integrado.
 
-## Como publicar
+## Banco integrado
 
-Suba o conteúdo desta pasta no repositório do GitHub Pages:
+- Total original enviado: 1850 registros
+- Questões anuladas excluídas do treino: 10
+- Questões úteis no site: 1840
+- Anos por arquivo: 2016 a 2025
+- Categorias visíveis do site: Física, Química, Biologia, Matemática, Linguagens, Filosofia, Sociologia, História e Geografia
 
-```txt
-index.html
-materias.html
-gerar.html
-questoes.html
-sobre.html
-404.html
-assets/
-data/
-.nojekyll
-README.md
-```
+## Como subir
 
-## Banco de questões
+Suba todo o conteúdo desta pasta `github-pages-site` na raiz do repositório do GitHub Pages.
 
-As questões ficam em:
+Arquivos principais:
 
-```txt
-data/banco-questoes.json
-```
+- `index.html`
+- `materias.html`
+- `gerar.html`
+- `questoes.html`
+- `assets/`
+- `data/banco-questoes.json`
 
-O site lê somente esse banco local. Isso evita que a lista puxe questão de matéria errada.
-
-## IA
-
-O botão de explicação chama o backend Render configurado em:
-
-```txt
-assets/js/config.js
-```
-
-Valor atual:
-
-```txt
-https://back-enem.onrender.com
-```
+O backend do Render continua sendo usado somente para o botão “Explicar resposta”.

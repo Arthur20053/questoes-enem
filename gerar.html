@@ -13,7 +13,7 @@
       <div class="container">
         <div class="breadcrumb"><a href="./index.html">Início</a><span>›</span><span>Gerar lista</span></div>
         <h1 class="page-title">Gere sua lista personalizada</h1>
-        <p class="lead">Escolha matéria, assunto, dificuldade e quantidade. O site usa um banco local curado para não misturar matérias erradas.</p>
+        <p class="lead">Escolha matéria, assunto, dificuldade e quantidade. O site usa o banco local ENEM 2016–2025. Assuntos sem questões ficam marcados para não gerar lista vazia ou puxar matéria errada.</p>
       </div>
     </section>
 
@@ -52,7 +52,7 @@
 
             <div class="form-footer">
               <div>
-                <p class="muted small">Agora os filtros são exatos: o site só usa questões cadastradas no banco local com essa matéria, assunto e dificuldade.</p>
+                <p class="muted small">Agora os filtros são exatos. O site mostra a quantidade disponível por assunto e não completa a lista com matéria errada.</p>
               </div>
               <button class="btn" type="submit">Gerar questões</button>
             </div>
@@ -74,7 +74,7 @@
           </div>
           <div class="card">
             <h2>Por que às vezes vem menos de 50?</h2>
-            <p class="muted">Alguns filtros ainda podem ter poucas questões porque o banco local está em expansão. Nesse caso, escolha “Todos os assuntos”, aumente os anos ou deixe dificuldade como “Todas”.</p>
+            <p class="muted">Alguns filtros podem ter menos de 50 questões porque o ENEM não cobra todos os assuntos na mesma quantidade. Nesse caso, escolha “Todos os assuntos”, marque mais anos ou deixe dificuldade como “Todas”.</p>
           </div>
         </div>
       </div>
@@ -90,10 +90,24 @@
   <script>
     const params = new URLSearchParams(location.search);
     const preSubject = params.get('materia') || 'fisica';
+    let BANK_STATS = { total: 0, porMateria: {}, porAssunto: {}, porDificuldade: {} };
+
+    function subjectCount(key){
+      return Number(BANK_STATS.porMateria?.[key] || 0);
+    }
+
+    function topicCount(subjectKey, topicId){
+      if(topicId === 'todos') return subjectCount(subjectKey);
+      return Number(BANK_STATS.porAssunto?.[`${subjectKey}/${topicId}`] || 0);
+    }
 
     function fillSubjects(){
       const subjectSelect = document.getElementById('subjectSelect');
-      subjectSelect.innerHTML = Object.entries(ENEM_TOPICS).map(([key, s]) => `<option value="${key}">${s.emoji} ${s.name}</option>`).join('');
+      subjectSelect.innerHTML = Object.entries(ENEM_TOPICS).map(([key, s]) => {
+        const count = subjectCount(key);
+        const label = count ? `${s.emoji} ${s.name} (${count})` : `${s.emoji} ${s.name} (sem questões ainda)`;
+        return `<option value="${key}">${label}</option>`;
+      }).join('');
       if(ENEM_TOPICS[preSubject]) subjectSelect.value = preSubject;
       fillTopics();
     }
@@ -102,7 +116,15 @@
       const key = document.getElementById('subjectSelect').value;
       const topicSelect = document.getElementById('topicSelect');
       const topics = ENEM_TOPICS[key].topics;
-      topicSelect.innerHTML = `<option value="todos">Todos os assuntos</option>` + topics.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+      const total = topicCount(key, 'todos');
+      let html = `<option value="todos">Todos os assuntos (${total})</option>`;
+      html += topics.map(t => {
+        const count = topicCount(key, t.id);
+        const disabled = count === 0 ? 'disabled' : '';
+        const suffix = count === 0 ? ' — sem questões no banco' : ` (${count})`;
+        return `<option value="${t.id}" ${disabled}>${t.name}${suffix}</option>`;
+      }).join('');
+      topicSelect.innerHTML = html;
     }
 
     function fillYears(){
@@ -116,7 +138,26 @@
       return [...document.querySelectorAll('#yearsWrap input:checked')].map(i => Number(i.value));
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function noQuestionsMessage(filters){
+      const subjectName = ENEM_TOPICS[filters.subject]?.name || filters.subject;
+      const topicName = filters.topic === 'todos'
+        ? 'Todos os assuntos'
+        : (ENEM_TOPICS[filters.subject]?.topics?.find(t => t.id === filters.topic)?.name || filters.topic);
+      return `<div class="alert danger"><strong>Não há questões nesse filtro ainda.</strong><br>
+        Matéria: ${subjectName}<br>
+        Assunto: ${topicName}<br>
+        Dificuldade: ${filters.difficulty}<br><br>
+        Isso não significa que o ENEM nunca cobrou esse assunto. Significa que o banco local atual ainda não tem questões cadastradas nesse recorte. Tente “Todos os assuntos” ou “Todas” em dificuldade.</div>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const bank = await ENEM_API.loadLocalBank();
+        BANK_STATS = bank.stats || BANK_STATS;
+      } catch (error) {
+        console.error(error);
+      }
+
       fillSubjects();
       fillYears();
       document.getElementById('subjectSelect').addEventListener('change', fillTopics);
@@ -143,7 +184,7 @@
         resultBox.innerHTML = '';
         progressBar.style.width = '0%';
         try{
-          const questions = await ENEM_API.generateQuestionList(filters, ({year, current, total, found}) => {
+          const questions = await ENEM_API.generateQuestionList(filters, ({current, total, found}) => {
             loadingText.textContent = `Carregando banco local... encontrados: ${found}`;
             progressBar.style.width = `${Math.round((current / total) * 100)}%`;
           });
@@ -158,9 +199,11 @@
           localStorage.setItem('ENEM_CURRENT_LIST', JSON.stringify(payload));
 
           if(!questions.length){
-            resultBox.innerHTML = `<p class="alert danger">Não encontrei questões com esse filtro no banco local. Tente “Todos os assuntos”, dificuldade “Todas” ou adicione mais questões ao banco.</p>`;
+            resultBox.innerHTML = noQuestionsMessage(filters);
           } else {
-            resultBox.innerHTML = `<div class="alert success"><strong>Lista gerada!</strong> Encontrei ${questions.length} questão(ões). Agora você já pode responder.</div><div class="actions" style="margin-top:14px"><a class="btn" href="./questoes.html">Responder agora</a><button class="btn secondary" type="button" onclick="location.reload()">Gerar outra</button></div>`;
+            const requested = Number(filters.quantity || 50);
+            const shortage = questions.length < requested ? `<br><span class="muted small">Pediu ${requested}, mas só existem ${questions.length} nesse filtro. Não completei com matéria errada.</span>` : '';
+            resultBox.innerHTML = `<div class="alert success"><strong>Lista gerada!</strong> Encontrei ${questions.length} questão(ões).${shortage}</div><div class="actions" style="margin-top:14px"><a class="btn" href="./questoes.html">Responder agora</a><button class="btn secondary" type="button" onclick="location.reload()">Gerar outra</button></div>`;
           }
         } catch(err){
           console.error(err);
