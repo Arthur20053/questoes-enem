@@ -52,7 +52,7 @@
 
             <div class="form-footer">
               <div>
-                <p class="muted small">Assunto e dificuldade são estimados automaticamente por palavras-chave.</p>
+                <p class="muted small">Os filtros agora usam busca mais rígida: é melhor vir menos questões do que misturar matéria errada.</p>
               </div>
               <button class="btn" type="submit">Gerar questões</button>
             </div>
@@ -70,11 +70,11 @@
         <div class="cards two">
           <div class="card">
             <h2>Como a classificação funciona?</h2>
-            <p class="muted">A questão vem de prova real do ENEM. Depois, o site lê palavras-chave para tentar classificar em Física, Química, Biologia, História e outras matérias. Isso é uma organização para estudo, não uma informação oficial da prova.</p>
+            <p class="muted">A questão vem de prova real do ENEM. A API informa a área do conhecimento, e o site usa palavras-chave mais rígidas para separar Física, Química, Biologia, História, Geografia, Filosofia e Sociologia. Se o filtro for muito específico, pode aparecer menos de 50 questões.</p>
           </div>
           <div class="card">
             <h2>Por que às vezes vem menos de 50?</h2>
-            <p class="muted">Alguns filtros muito específicos podem encontrar poucas questões na API pública. Nesse caso, escolha “Todos os assuntos”, aumente os anos ou deixe dificuldade como “Todas”.</p>
+            <p class="muted">Alguns filtros muito específicos podem encontrar poucas questões, principalmente porque o ENEM agrupa Física, Química e Biologia dentro de Ciências da Natureza. Nesse caso, escolha “Todos os assuntos” ou deixe dificuldade como “Todas”.</p>
           </div>
         </div>
       </div>
@@ -158,7 +158,7 @@
           localStorage.setItem('ENEM_CURRENT_LIST', JSON.stringify(payload));
 
           if(!questions.length){
-            resultBox.innerHTML = `<p class="alert danger">Não encontrei questões com esse filtro. Tente “Todos os assuntos” e dificuldade “Todas”.</p>`;
+            resultBox.innerHTML = `<p class="alert danger">Não encontrei questões seguras com esse filtro. Para não misturar matéria errada, tente “Todos os assuntos” ou dificuldade “Todas”.</p>`;
           } else {
             resultBox.innerHTML = `<div class="alert success"><strong>Lista gerada!</strong> Encontrei ${questions.length} questão(ões). Agora você já pode responder.</div><div class="actions" style="margin-top:14px"><a class="btn" href="./questoes.html">Responder agora</a><button class="btn secondary" type="button" onclick="location.reload()">Gerar outra</button></div>`;
           }
