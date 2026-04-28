@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gerar lista | Questões ENEM</title>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+<body>
+  <div id="appHeader"></div>
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <div class="breadcrumb"><a href="./index.html">Início</a><span>›</span><span>Gerar lista</span></div>
+        <h1 class="page-title">Gere sua lista personalizada</h1>
+        <p class="lead">Escolha matéria, assunto, dificuldade e quantidade. O site usa um banco local curado para não misturar matérias erradas.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="card">
+          <form id="generateForm">
+            <div class="form-grid">
+              <div class="field">
+                <label for="subjectSelect">Matéria</label>
+                <select id="subjectSelect" required></select>
+              </div>
+              <div class="field">
+                <label for="topicSelect">Assunto</label>
+                <select id="topicSelect" required></select>
+              </div>
+              <div class="field">
+                <label for="difficultySelect">Dificuldade</label>
+                <select id="difficultySelect">
+                  <option value="todas">Todas</option>
+                  <option value="facil">Fácil</option>
+                  <option value="media">Média</option>
+                  <option value="dificil">Difícil</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="quantityInput">Quantidade</label>
+                <input id="quantityInput" type="number" min="1" max="50" value="50" />
+              </div>
+            </div>
+
+            <details style="margin-top:18px">
+              <summary><strong>Anos usados</strong></summary>
+              <div id="yearsWrap" class="years"></div>
+            </details>
+
+            <div class="form-footer">
+              <div>
+                <p class="muted small">Agora os filtros são exatos: o site só usa questões cadastradas no banco local com essa matéria, assunto e dificuldade.</p>
+              </div>
+              <button class="btn" type="submit">Gerar questões</button>
+            </div>
+          </form>
+
+          <div id="loading" class="loading"><span class="spinner"></span><span id="loadingText">Carregando banco local...</span></div>
+          <div style="margin-top:16px" class="progress-wrap"><div id="progressBar" class="progress-bar"></div></div>
+          <div id="resultBox" style="margin-top:18px"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="cards two">
+          <div class="card">
+            <h2>Como o banco funciona?</h2>
+            <p class="muted">As questões ficam cadastradas em data/banco-questoes.json com matéria, assunto e dificuldade. O site não tenta adivinhar a matéria na hora, então evita puxar Biologia quando você pediu Física.</p>
+          </div>
+          <div class="card">
+            <h2>Por que às vezes vem menos de 50?</h2>
+            <p class="muted">Alguns filtros ainda podem ter poucas questões porque o banco local está em expansão. Nesse caso, escolha “Todos os assuntos”, aumente os anos ou deixe dificuldade como “Todas”.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="appFooter"></div>
+  <div id="appModal"></div>
+
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/topics.js"></script>
+  <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/enem-api.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const preSubject = params.get('materia') || 'fisica';
+
+    function fillSubjects(){
+      const subjectSelect = document.getElementById('subjectSelect');
+      subjectSelect.innerHTML = Object.entries(ENEM_TOPICS).map(([key, s]) => `<option value="${key}">${s.emoji} ${s.name}</option>`).join('');
+      if(ENEM_TOPICS[preSubject]) subjectSelect.value = preSubject;
+      fillTopics();
+    }
+
+    function fillTopics(){
+      const key = document.getElementById('subjectSelect').value;
+      const topicSelect = document.getElementById('topicSelect');
+      const topics = ENEM_TOPICS[key].topics;
+      topicSelect.innerHTML = `<option value="todos">Todos os assuntos</option>` + topics.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+    }
+
+    function fillYears(){
+      const wrap = document.getElementById('yearsWrap');
+      wrap.innerHTML = ENEM_CONFIG.YEARS.map(y => `
+        <label class="year-check"><input type="checkbox" value="${y}" checked /> ${y}</label>
+      `).join('');
+    }
+
+    function selectedYears(){
+      return [...document.querySelectorAll('#yearsWrap input:checked')].map(i => Number(i.value));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fillSubjects();
+      fillYears();
+      document.getElementById('subjectSelect').addEventListener('change', fillTopics);
+
+      document.getElementById('generateForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const resultBox = document.getElementById('resultBox');
+        const loading = document.getElementById('loading');
+        const loadingText = document.getElementById('loadingText');
+        const progressBar = document.getElementById('progressBar');
+        const quantity = Math.min(50, Math.max(1, Number(document.getElementById('quantityInput').value || 50)));
+        const filters = {
+          subject: document.getElementById('subjectSelect').value,
+          topic: document.getElementById('topicSelect').value,
+          difficulty: document.getElementById('difficultySelect').value,
+          quantity,
+          years: selectedYears()
+        };
+        if(!filters.years.length){
+          resultBox.innerHTML = `<p class="alert danger">Selecione pelo menos um ano.</p>`;
+          return;
+        }
+        loading.classList.add('show');
+        resultBox.innerHTML = '';
+        progressBar.style.width = '0%';
+        try{
+          const questions = await ENEM_API.generateQuestionList(filters, ({year, current, total, found}) => {
+            loadingText.textContent = `Carregando banco local... encontrados: ${found}`;
+            progressBar.style.width = `${Math.round((current / total) * 100)}%`;
+          });
+
+          const payload = {
+            createdAt: new Date().toISOString(),
+            filters,
+            subjectName: ENEM_TOPICS[filters.subject].name,
+            questions,
+            answers: {}
+          };
+          localStorage.setItem('ENEM_CURRENT_LIST', JSON.stringify(payload));
+
+          if(!questions.length){
+            resultBox.innerHTML = `<p class="alert danger">Não encontrei questões com esse filtro no banco local. Tente “Todos os assuntos”, dificuldade “Todas” ou adicione mais questões ao banco.</p>`;
+          } else {
+            resultBox.innerHTML = `<div class="alert success"><strong>Lista gerada!</strong> Encontrei ${questions.length} questão(ões). Agora você já pode responder.</div><div class="actions" style="margin-top:14px"><a class="btn" href="./questoes.html">Responder agora</a><button class="btn secondary" type="button" onclick="location.reload()">Gerar outra</button></div>`;
+          }
+        } catch(err){
+          console.error(err);
+          resultBox.innerHTML = `<p class="alert danger">Erro ao carregar o banco local. Confira se data/banco-questoes.json foi enviado para o GitHub.</p>`;
+        } finally {
+          loading.classList.remove('show');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

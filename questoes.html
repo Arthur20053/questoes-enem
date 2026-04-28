@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Responder questões | Questões ENEM</title>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+<body>
+  <div id="appHeader"></div>
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <div class="breadcrumb"><a href="./index.html">Início</a><span>›</span><span>Questões</span></div>
+        <h1 class="page-title">Responder lista</h1>
+        <p class="lead">Marque uma alternativa, clique em responder, veja a correção e peça explicação quando precisar.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container" id="quizRoot"></div>
+    </section>
+  </main>
+  <div id="appFooter"></div>
+  <div id="appModal"></div>
+
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/topics.js"></script>
+  <script src="./assets/js/ui.js"></script>
+  <script src="./assets/js/enem-api.js"></script>
+  <script>
+    let list = null;
+    let current = 0;
+    let selected = '';
+    const tempSelections = {};
+
+    function loadList(){
+      try { return JSON.parse(localStorage.getItem('ENEM_CURRENT_LIST') || 'null'); }
+      catch { return null; }
+    }
+    function saveList(){ localStorage.setItem('ENEM_CURRENT_LIST', JSON.stringify(list)); }
+    function statusOf(index){ return list.answers?.[list.questions[index].id]?.status || 'open'; }
+    function stats(){
+      const answers = Object.values(list.answers || {});
+      return {
+        total: list.questions.length,
+        answered: answers.filter(a => a.status === 'correct' || a.status === 'wrong').length,
+        correct: answers.filter(a => a.status === 'correct').length,
+        wrong: answers.filter(a => a.status === 'wrong').length,
+        skipped: answers.filter(a => a.status === 'skipped').length
+      };
+    }
+    function renderMedia(files){
+      if(!files || !files.length) return '';
+      return files.map(f => {
+        const url = f.url || f.file || f.image || f;
+        if(!url) return '';
+        return `<p><img src="${escapeHtml(url)}" alt="Imagem da questão" loading="lazy"></p>`;
+      }).join('');
+    }
+    function renderQuestionText(q){
+      return `
+        <div class="question-text">
+          ${q.title ? `<p><strong>${escapeHtml(stripHtml(q.title))}</strong></p>` : ''}
+          ${q.context ? `<p>${q.context}</p>` : ''}
+          ${renderMedia(q.files)}
+          ${q.alternativesIntroduction ? `<p><strong>${q.alternativesIntroduction}</strong></p>` : ''}
+        </div>
+      `;
+    }
+    function renderQuiz(){
+      const root = document.getElementById('quizRoot');
+      list = loadList();
+      if(!list || !list.questions || !list.questions.length){
+        root.innerHTML = `<div class="card"><h2>Nenhuma lista gerada ainda</h2><p class="muted">Gere uma lista primeiro escolhendo matéria, assunto, dificuldade e quantidade.</p><div class="actions" style="margin-top:18px"><a class="btn" href="./gerar.html">Gerar lista</a></div></div>`;
+        return;
+      }
+      const q = list.questions[current];
+      const answer = list.answers?.[q.id] || null;
+      selected = answer?.selected || tempSelections[q.id] || '';
+      const st = stats();
+      root.innerHTML = `
+        <div class="quiz-layout">
+          <aside class="quiz-side card">
+            <h2>${escapeHtml(list.subjectName || 'Lista')}</h2>
+            <p class="muted small">${list.questions.length} questão(ões) na lista.</p>
+            <div class="progress-wrap"><div class="progress-bar" style="width:${Math.round(((current + 1) / list.questions.length) * 100)}%"></div></div>
+            <div class="score-list">
+              <div class="score-item"><span>Respondidas</span><strong>${st.answered}</strong></div>
+              <div class="score-item"><span>Acertos</span><strong>${st.correct}</strong></div>
+              <div class="score-item"><span>Erros</span><strong>${st.wrong}</strong></div>
+              <div class="score-item"><span>Puladas</span><strong>${st.skipped}</strong></div>
+            </div>
+            <div class="question-index">
+              ${list.questions.map((_, i) => `<button class="qdot ${i === current ? 'active' : ''} ${statusOf(i)}" onclick="goTo(${i})">${i+1}</button>`).join('')}
+            </div>
+            <div class="actions" style="margin-top:18px"><a class="btn secondary" href="./gerar.html">Nova lista</a></div>
+          </aside>
+          <article class="card">
+            <div class="question-head">
+              <div>
+                <div class="question-meta">
+                  <span class="pill">Questão ${current + 1}/${list.questions.length}</span>
+                  <span class="pill">ENEM ${q.year}</span>
+                  <span class="pill">${escapeHtml(q.estimatedSubjectName || '')}</span>
+                  <span class="pill">${escapeHtml(q.estimatedTopic?.name || 'Assunto estimado')}</span>
+                  <span class="pill">${q.estimatedDifficulty === 'facil' ? 'Fácil' : q.estimatedDifficulty === 'media' ? 'Média' : 'Difícil'}</span>
+                </div>
+              </div>
+              <button class="btn secondary" type="button" onclick="skipQuestion()">Pular questão</button>
+            </div>
+            ${renderQuestionText(q)}
+            <div class="alternatives">
+              ${q.alternatives.map(a => {
+                let cls = '';
+                if(answer?.status === 'correct' || answer?.status === 'wrong'){
+                  if(a.letter === q.correctAlternative) cls = 'correct';
+                  if(a.letter === answer.selected && answer.selected !== q.correctAlternative) cls = 'wrong';
+                } else if(a.letter === selected){ cls = 'selected'; }
+                return `<button class="alt ${cls}" type="button" onclick="selectAlt('${a.letter}')" ${answer?.status === 'correct' || answer?.status === 'wrong' ? 'disabled' : ''}>
+                  <span class="letter">${escapeHtml(a.letter)}</span>
+                  <span>${a.text || ''}${a.file ? `<br><img src="${escapeHtml(a.file)}" alt="Alternativa ${escapeHtml(a.letter)}">` : ''}</span>
+                </button>`;
+              }).join('')}
+            </div>
+            <div id="feedback">${renderFeedback(q, answer)}</div>
+            <div class="quiz-actions">
+              <button id="answerBtn" class="btn" type="button" onclick="answerQuestion()" ${answer?.status === 'correct' || answer?.status === 'wrong' ? 'disabled' : ''}>Responder</button>
+              <button class="btn secondary" type="button" onclick="explainQuestion()">Explicar resposta</button>
+              <button class="btn secondary" type="button" onclick="prevQuestion()" ${current === 0 ? 'disabled' : ''}>Anterior</button>
+              <button class="btn secondary" type="button" onclick="nextQuestion()" ${current === list.questions.length - 1 ? 'disabled' : ''}>Próxima</button>
+            </div>
+            <div id="explainBox" class="explain-box card"><div class="loading" id="explainLoading"><span class="spinner"></span><span>Gerando explicação...</span></div><div id="explainContent" class="explain-content"></div></div>
+          </article>
+        </div>
+      `;
+    }
+    function renderFeedback(q, answer){
+      if(!answer) return '';
+      if(answer.status === 'skipped') return `<p class="alert">Questão pulada. Você pode voltar nela depois.</p>`;
+      if(answer.status === 'correct') return `<p class="alert success"><strong>Acertou!</strong> A alternativa correta é ${escapeHtml(q.correctAlternative)}.</p>`;
+      if(answer.status === 'wrong') return `<p class="alert danger"><strong>Errou.</strong> Você marcou ${escapeHtml(answer.selected)}. A correta é ${escapeHtml(q.correctAlternative)}.</p>`;
+      return '';
+    }
+    function selectAlt(letter){ const q = list.questions[current]; selected = letter; tempSelections[q.id] = letter; renderQuiz(); }
+    function answerQuestion(){
+      const q = list.questions[current];
+      if(!selected){ alert('Marque uma alternativa antes de responder.'); return; }
+      list.answers = list.answers || {};
+      list.answers[q.id] = { selected, status: selected === q.correctAlternative ? 'correct' : 'wrong', answeredAt: new Date().toISOString() };
+      saveList(); renderQuiz();
+    }
+    function skipQuestion(){
+      const q = list.questions[current];
+      list.answers = list.answers || {};
+      if(!list.answers[q.id]) list.answers[q.id] = { selected: '', status: 'skipped', answeredAt: new Date().toISOString() };
+      saveList(); nextQuestion();
+    }
+    function goTo(i){ current = i; renderQuiz(); }
+    function nextQuestion(){ if(current < list.questions.length - 1){ current++; renderQuiz(); } }
+    function prevQuestion(){ if(current > 0){ current--; renderQuiz(); } }
+    async function explainQuestion(){
+      const backendUrl = window.getBackendUrl?.() || '';
+      const q = list.questions[current];
+      const answer = list.answers?.[q.id] || {};
+      const box = document.getElementById('explainBox');
+      const loading = document.getElementById('explainLoading');
+      const content = document.getElementById('explainContent');
+      box.classList.add('show');
+      content.innerHTML = '';
+      if(!backendUrl){
+        content.innerHTML = `<p class="alert danger">Configure primeiro o link do backend do Render em “Configurar IA”.</p>`;
+        return;
+      }
+      loading.classList.add('show');
+      try{
+        const res = await fetch(`${backendUrl}/api/explain`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: q, selectedLetter: answer.selected || selected || null })
+        });
+        const data = await res.json().catch(() => ({}));
+        if(!res.ok) throw new Error(data.error || 'Erro ao explicar');
+        content.textContent = data.explanation || 'Não foi possível gerar explicação.';
+      } catch(err){
+        content.innerHTML = `<p class="alert danger">Não consegui chamar a IA. Confira se o backend do Render está online e se a variável GEMINI_API_KEY está correta.</p>`;
+      } finally {
+        loading.classList.remove('show');
+      }
+    }
+    document.addEventListener('DOMContentLoaded', renderQuiz);
+  </script>
+</body>
+</html>
