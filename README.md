@@ -1,44 +1,46 @@
-# Questões ENEM - GitHub Pages
+# Backend ENEM Gemini — Render
 
-Site multipáginas para treino de questões do ENEM.
+Backend Node/Express para gerar explicações com Gemini sem expor a chave no GitHub Pages.
 
-## Como publicar
+## Render
 
-Suba o conteúdo desta pasta no repositório do GitHub Pages:
+Crie um Web Service apontando para este repositório.
 
-```txt
-index.html
-materias.html
-gerar.html
-questoes.html
-sobre.html
-404.html
-assets/
-data/
-.nojekyll
-README.md
-```
-
-## Banco de questões
-
-As questões ficam em:
+Build Command:
 
 ```txt
-data/banco-questoes.json
+npm install
 ```
 
-O site lê somente esse banco local. Isso evita que a lista puxe questão de matéria errada.
-
-## IA
-
-O botão de explicação chama o backend Render configurado em:
+Start Command:
 
 ```txt
-assets/js/config.js
+npm start
 ```
 
-Valor atual:
+## Variáveis de ambiente
 
 ```txt
-https://back-enem.onrender.com
+GEMINI_API_KEY=sua_chave_do_google_ai_studio
+GEMINI_MODEL=gemini-2.5-flash
+ALLOWED_ORIGINS=https://seuusuario.github.io
+DAILY_EXPLAIN_LIMIT=60
 ```
+
+Durante testes, você pode usar:
+
+```txt
+ALLOWED_ORIGINS=*
+```
+
+Depois troque pelo domínio do GitHub Pages.
+
+## Teste
+
+Abra:
+
+```txt
+https://seu-backend.onrender.com/api/health
+```
+
+Deve aparecer `ok: true` e `hasGeminiKey: true`.
