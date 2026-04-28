@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gerar banco de questões | Questões ENEM</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+  <style>
+    .logbox{background:#0f172a;color:#dbeafe;border-radius:18px;padding:16px;max-height:360px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.5}
+    .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.admin-grid .card{height:100%}@media(max-width:850px){.admin-grid{grid-template-columns:1fr}}
+    .meter-line{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:8px 0}.meter-line strong{white-space:nowrap}
+  </style>
+</head>
+<body>
+  <div id="appHeader"></div>
+  <main>
+    <section class="page-head"><div class="container"><div class="breadcrumb"><a href="../index.html">Início</a><span>›</span><span>Admin</span><span>›</span><span>Gerar banco</span></div><h1 class="page-title">Gerador do banco próprio</h1><p class="lead">Esta página baixa questões reais da API ENEM, organiza nas matérias/assuntos do site e gera o arquivo <strong>banco-questoes.json</strong>.</p></div></section>
+    <section class="section"><div class="container">
+      <div class="admin-grid">
+        <div class="card"><h2>Configuração</h2><p class="muted">Para ficar mais correto, atualize o Render com o endpoint de classificação e marque Gemini. Sem Gemini, ele usa regras locais.</p>
+          <div class="field"><label for="backendUrl">Link do Render</label><input id="backendUrl" type="url" placeholder="https://back-enem.onrender.com" /></div>
+          <div class="field"><label><input id="useGemini" type="checkbox" checked /> Usar Gemini pelo Render para classificar matéria, assunto e dificuldade</label></div>
+          <div class="field"><label for="batchSize">Questões por lote da IA</label><input id="batchSize" type="number" min="5" max="25" value="15" /></div>
+          <div class="field"><label for="limitYears">Anos</label><input id="limitYears" type="text" value="2023,2022,2021,2020,2019,2018,2017,2016,2015,2014,2013,2012,2011,2010,2009" /><p class="muted small">Para testar, coloque só 2023. Depois rode com todos.</p></div>
+          <div class="actions" style="margin-top:18px"><button id="startBtn" class="btn" type="button">Gerar banco</button><button id="downloadBtn" class="btn secondary" type="button" disabled>Baixar banco-questoes.json</button></div>
+        </div>
+        <div class="card"><h2>Progresso</h2><div class="meter-line"><span>Questões baixadas</span><strong id="downloadCount">0</strong></div><div class="meter-line"><span>Questões classificadas</span><strong id="classifiedCount">0</strong></div><div class="meter-line"><span>Total final</span><strong id="finalCount">0</strong></div><div class="progress-wrap"><div id="progressBar" class="progress-bar"></div></div><div class="logbox" id="logBox">Pronto para começar.</div></div>
+      </div>
+      <div class="card" style="margin-top:18px"><h2>Depois que baixar</h2><p class="muted">Salve o arquivo baixado dentro da pasta do seu site assim:</p><pre><code>questoes-enem/data/banco-questoes.json</code></pre><p class="muted">Depois faça <strong>Commit to main</strong> e <strong>Push origin</strong> pelo GitHub Desktop.</p></div>
+    </div></section>
+  </main>
+  <div id="appFooter"></div><div id="appModal"></div>
+  <script src="../assets/js/config.js"></script><script src="../assets/js/topics.js"></script><script src="../assets/js/ui.js"></script><script src="../assets/js/enem-api.js"></script>
+  <script>
+    let generatedBank=null; const $=id=>document.getElementById(id);
+    function log(msg){const box=$('logBox'); const time=new Date().toLocaleTimeString(); box.textContent+=`\n[${time}] ${msg}`; box.scrollTop=box.scrollHeight;}
+    function setProgress(done,total){$('progressBar').style.width=total?`${Math.round((done/total)*100)}%`:'0%';}
+    function cleanText(text){return String(text||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();}
+    function compactForAI(q){return {id:q.id,ano:q.year,indice:q.index,areaOriginal:q.discipline,idioma:q.language||null,texto:[cleanText(q.title),cleanText(q.context),cleanText(q.alternativesIntroduction),...(q.alternatives||[]).map(a=>`${a.letter}) ${cleanText(a.text)}`)].join('\n').slice(0,5000)};}
+    async function fetchAllQuestions(year){const result=[];let offset=0,limit=10,safety=0;while(safety<40){const url=`${ENEM_CONFIG.API_BASE}/exams/${year}/questions?offset=${offset}`;const res=await fetch(url,{headers:{accept:'application/json'}});if(!res.ok)throw new Error(`Erro ${res.status} no ano ${year}`);const data=await res.json();const questions=data.questions||[];result.push(...questions.map(q=>normalizeQuestion(q,year)));const meta=data.metadata||{};limit=Number(meta.limit||questions.length||10);if(!meta.hasMore||!questions.length)break;offset+=limit;safety++;}return result;}
+    function localClassify(q){const best=ENEM_API.detectSubject(q);const materia=best.key||'linguagem';const topic=ENEM_API.detectTopic(q,materia);return {id:q.id,materia,assunto:topic.id||'interpretacao',dificuldade:ENEM_API.estimateDifficulty(q),confianca:Math.max(.25,Math.min(.85,(best.score||1)/10)),metodo:'regras-locais'};}
+    async function classifyWithGemini(questions,backendUrl,batchSize){const labels=new Map();let done=0;for(let i=0;i<questions.length;i+=batchSize){const batch=questions.slice(i,i+batchSize);try{const res=await fetch(`${backendUrl.replace(/\/$/,'')}/api/classify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({questions:batch.map(compactForAI),taxonomy:window.ENEM_TOPICS})});const data=await res.json().catch(()=>({}));if(!res.ok||!Array.isArray(data.classifications))throw new Error(data.error||'Resposta inválida da IA');data.classifications.forEach(c=>labels.set(c.id,{...c,metodo:'gemini'}));}catch(err){log(`Lote ${Math.floor(i/batchSize)+1}: IA falhou, usando regras locais. ${err.message}`);batch.forEach(q=>labels.set(q.id,localClassify(q)));}done+=batch.length;$('classifiedCount').textContent=String(done);setProgress(done,questions.length);await new Promise(r=>setTimeout(r,350));}return labels;}
+    function normalizeToBankItem(q,label){const materiaKey=ENEM_TOPICS[label.materia]?label.materia:(ENEM_API.detectSubject(q).key||'linguagem');const materia=ENEM_TOPICS[materiaKey];const topic=materia.topics.find(t=>t.id===label.assunto)||ENEM_API.detectTopic(q,materiaKey);const dificuldade=['facil','media','dificil'].includes(label.dificuldade)?label.dificuldade:ENEM_API.estimateDifficulty(q);return {id:q.id,ano:q.year,indice:q.index,titulo:q.title,areaOriginal:q.discipline,idioma:q.language||null,materia:materiaKey,materiaNome:materia.name,assunto:topic.id,assuntoNome:topic.name,dificuldade,dificuldadeNome:dificuldade==='facil'?'Fácil':dificuldade==='media'?'Média':'Difícil',contexto:q.context||'',comando:q.alternativesIntroduction||'',alternativas:(q.alternatives||[]).map(a=>({letra:a.letter,texto:a.text||'',arquivo:a.file||null})),resposta:q.correctAlternative,arquivos:q.files||[],fonte:`ENEM ${q.year}`,classificacao:{metodo:label.metodo||'gemini',confianca:Number(label.confianca||.5),observacao:label.observacao||''}};}
+    function buildStats(items){const stats={total:items.length,porMateria:{},porAno:{},porDificuldade:{}};for(const it of items){stats.porMateria[it.materia]=(stats.porMateria[it.materia]||0)+1;stats.porAno[it.ano]=(stats.porAno[it.ano]||0)+1;stats.porDificuldade[it.dificuldade]=(stats.porDificuldade[it.dificuldade]||0)+1;}return stats;}
+    async function start(){ $('startBtn').disabled=true;$('downloadBtn').disabled=true;$('logBox').textContent='Iniciando...'; const years=$('limitYears').value.split(',').map(v=>Number(v.trim())).filter(Boolean); const all=[]; for(const year of years){log(`Baixando ENEM ${year}...`);try{const qs=await fetchAllQuestions(year);all.push(...qs);log(`ENEM ${year}: ${qs.length} questões.`);}catch(err){log(`Falha em ${year}: ${err.message}`);}$('downloadCount').textContent=String(all.length);} log(`Total baixado: ${all.length}. Classificando...`); const useGemini=$('useGemini').checked; const backendUrl=$('backendUrl').value.trim()||ENEM_CONFIG.BACKEND_URL||''; const batchSize=Math.max(5,Math.min(25,Number($('batchSize').value||15))); let labels; if(useGemini&&backendUrl){labels=await classifyWithGemini(all,backendUrl,batchSize);}else{labels=new Map(all.map(q=>[q.id,localClassify(q)]));$('classifiedCount').textContent=String(all.length);setProgress(all.length,all.length);} const items=all.map(q=>normalizeToBankItem(q,labels.get(q.id)||localClassify(q))).filter(it=>it.resposta&&it.alternativas.length>=2); generatedBank={version:'1.0.0',generatedAt:new Date().toISOString(),source:{name:'API ENEM comunitária',api:ENEM_CONFIG.API_BASE,years},taxonomy:Object.fromEntries(Object.entries(ENEM_TOPICS).map(([k,v])=>[k,{name:v.name,topics:v.topics.map(t=>({id:t.id,name:t.name}))}])),stats:buildStats(items),questions:items}; $('finalCount').textContent=String(items.length);$('downloadBtn').disabled=false;$('startBtn').disabled=false;log('Banco pronto. Clique em Baixar banco-questoes.json.');}
+    function downloadBank(){if(!generatedBank)return;const blob=new Blob([JSON.stringify(generatedBank,null,2)],{type:'application/json;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='banco-questoes.json';a.click();URL.revokeObjectURL(a.href);}
+    document.addEventListener('DOMContentLoaded',()=>{$('backendUrl').value=ENEM_CONFIG.BACKEND_URL||'';$('startBtn').addEventListener('click',start);$('downloadBtn').addEventListener('click',downloadBank);});
+  </script>
+</body>
+</html>

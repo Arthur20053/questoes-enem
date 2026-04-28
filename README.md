@@ -42,3 +42,7 @@ O link do backend do Render pode ser configurado de duas formas:
 2. Editando `assets/js/config.js` e colocando o link em `BACKEND_URL`.
 
 Não coloque chave do Gemini no GitHub Pages.
+
+## Banco próprio
+
+Abra `admin/gerar-banco.html` para gerar `data/banco-questoes.json`. Depois de salvar o arquivo gerado em `data/banco-questoes.json`, o site passa a usar filtros exatos por matéria, assunto e dificuldade.

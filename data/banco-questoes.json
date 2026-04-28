@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "generatedAt": null,
+  "source": {
+    "name": "API ENEM comunitária + classificação própria",
+    "api": "https://api.enem.dev/v1",
+    "note": "Arquivo inicial vazio. Use admin/gerar-banco.html para gerar o banco completo e substitua este arquivo."
+  },
+  "taxonomy": "same-as-assets-js-topics",
+  "stats": { "total": 0 },
+  "questions": []
+}
